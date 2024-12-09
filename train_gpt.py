@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModel, AutoTokenizer
 from datasets import load_dataset
 import wandb
 import os
@@ -13,10 +13,12 @@ DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 def main():
-    tokenizer = AutoTokenizer.from_pretrained("gpt2")
+    checkpoint = 'mnoukhov/gpt2-imdb-sentiment-classifier'
+
+    tokenizer = AutoTokenizer.from_pretrained(checkpoint)
     tokenizer.pad_token_id = tokenizer.eos_token_id
 
-    model = AutoModelForCausalLM.from_pretrained("gpt2")
+    model = AutoModel.from_pretrained(checkpoint)
     for block in model.transformer.h:
         block.attn = AttentionSpy(block.attn)
 
